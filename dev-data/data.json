@@ -1,0 +1,55 @@
+[
+    {
+        "id": 0,
+        "productName": "Fresh Avacado",
+        "image": "🥑",
+        "from": "Germany",
+        "nutrients": "vitamin B, Vitamin k",
+        "quantity": "4 🥑",
+        "price": "2.00",
+        "organic": true,
+        "description": "A Fresh Avacado town hall different from bala blu, blue blu bulaba. broom broom broom brooooooooom. Bala blu blue blu bulaba. The farmers will make more money. Your lunch will not be imported, cassava garri ewa and ehhh ehhhhnn. The farmer will make money, the dinner would be cassava, eba, ewa and everything."
+    },
+    {
+        "id": 1,
+        "productName": "Sweet Corncobs",
+        "image": "🌽",
+        "from": "Germany",
+        "nutrients": "vitamin C, manganese",
+        "quantity": "2 🌽",
+        "price": "2.00",
+        "organic": false,
+        "description": "A sweet corncobs town hall different from bala blu, blue blu bulaba. broom broom broom brooooooooom. Bala blu blue blu bulaba. The farmers will make more money. Your lunch will not be imported, cassava garri ewa and ehhh ehhhhnn. The farmer will make money, the dinner would be cassava, eba, ewa and everything."
+    },{
+        "id": 2,
+        "productName": "Apollo brocolli",
+        "image": "🌿",
+        "from": "Germany",
+        "nutrients": "vitamin C, manganese",
+        "quantity": "6 🌿",
+        "price": "2.00",
+        "organic": true,
+        "description": "A Apollo brocolli town hall different from bala blu, blue blu bulaba. broom broom broom brooooooooom. Bala blu blue blu bulaba. The farmers will make more money. Your lunch will not be imported, cassava garri ewa and ehhh ehhhhnn. The farmer will make money, the dinner would be cassava, eba, ewa and everything."
+    },{
+        "id": 3,
+        "productName": "Baby carrots",
+        "image": "🥕",
+        "from": "Germany",
+        "nutrients": "vitamin C, manganese",
+        "quantity": "8 🥕",
+        "price": "2.00",
+        "organic": true,
+        "description": "A Baby carrots town hall different from bala blu, blue blu bulaba. broom broom broom brooooooooom. Bala blu blue blu bulaba. The farmers will make more money. Your lunch will not be imported, cassava garri ewa and ehhh ehhhhnn. The farmer will make money, the dinner would be cassava, eba, ewa and everything."
+    },{
+        "id": 4,
+        "productName": "goat and goose cheese",
+        "image": "🧀",
+        "from": "Germany",
+        "nutrients": "vitamin C, manganese",
+        "quantity": "2 🧀",
+        "price": "2.00",
+        "organic": false,
+        "description": "A goat and goose cheese hall different from bala blu, blue blu bulaba. broom broom broom brooooooooom. Bala blu blue blu bulaba. The farmers will make more money. Your lunch will not be imported, cassava garri ewa and ehhh ehhhhnn. The farmer will make money, the dinner would be cassava, eba, ewa and everything."
+    }
+
+]
