@@ -4,6 +4,14 @@ const fss = require('fs')
 const http = require('http')
 const url = require('url')
 const replaceTemplates = require('./modules/replaceTemplates')
+const slugify = require('slugify')
+
+
+
+
+
+
+
 
 
 //  functions that need to be called once throuoghout the run time of the nodeserver should be listed as a op level function asthis will help make the 
@@ -12,11 +20,15 @@ const data = async() =>{
     return await fs.readFile('./dev-data/data.json', 'UTF-8')
 }
 const dataResponse = data().then((res)=>JSON.parse(res))
-
 const tempOverview = fss.readFileSync(`${__dirname}/templates/overview.html`, 'utf-8');
 const tempCard = fss.readFileSync(`${__dirname}/templates/templateCard.html`, 'utf-8');
 const tempProduct = fss.readFileSync(`${__dirname}/templates/product.html`, 'utf-8');
 
+const dataResponse2 = dataResponse.then(res=>{
+    return res.map(data1=>{
+        return {...data1, id: slugify(data1.productName)}
+    })
+})
 // server setup
 const server = http.createServer((req, res)=>{
     const  {query, pathname} = url.parse(req.url, true)
@@ -36,7 +48,7 @@ const server = http.createServer((req, res)=>{
     } else if (pathname === '/product') {
         res.writeHead(200, {"content-type": "text/html"})
         
-        dataResponse.then(res=>res.filter(resp=>query.id== resp.id)) 
+        dataResponse2.then(res=>res.filter(resp=>query.id== resp.id)) 
         .then(([reps])=>replaceTemplates(tempProduct, reps))
         .then((reps)=>res.end(reps))
         

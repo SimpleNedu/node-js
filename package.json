@@ -4,6 +4,7 @@
   "description": "learning node",
   "main": "index2.js",
   "scripts": {
+    "start":"nodemon index2.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
