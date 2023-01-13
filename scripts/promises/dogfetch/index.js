@@ -19,24 +19,45 @@ const server = require('http').createServer()
 // })
 
 // promisified by me
-const data = async()=> {
-    return await fss.readFile(path.join(__dirname, '../../../txt/dog.txt'), 'utf-8')
+// const data = async()=> {
+//     return await fss.readFile(path.join(__dirname, '../../../txt/dog.txt'), 'utf-8')
+// }
+// const dog_data = data()
+// .then((res)=>{
+//     return superaget.get(`https://dog.ceo/api/breed/${res}/images/random`)
+// })
+// .then(res=>{
+//     console.log(res.body.message)
+//     return fs.writeFile(path.join(__dirname, '../../../txt/dog2text.txt'), res.body.message, ()=>console.log("file load succesful"))
+// })
+// .catch(err=>{
+//     console.log(`Error: ${err.message}`)
+// })
+
+// from the tutorial
+const getData = async(sourceurl, fetchurl, destinationurl)=>{
+    try {
+        const data = await  fss.readFile(sourceurl, 'utf-8')
+
+        const url = await superaget.get(fetchurl(data))
+
+        await fss.writeFile(destinationurl, url.body.message)
+        return url.body.message
+        
+    } catch (error) {
+        return console.log(`Error: ${error.message}`)
+    }
 }
-const dog_data = data()
-.then((res)=>{
-    return superaget.get(`https://dog.ceo/api/breed/${res}/images/random`)
-})
-.then(res=>{
-    console.log(res.body.message)
-    return fs.writeFile(path.join(__dirname, '../../../txt/dog2text.txt'), res.body.message, ()=>console.log("file load succesful"))
-})
-.catch(err=>{
-    console.log(`Error: ${err.message}`)
-})
 
 
 
 server.on('request', (req, res)=>{
+    const data = getData(path.join(__dirname, '../../../txt/dog.txt'), (data)=>`https://dog.ceo/api/breed/${data}/images/random`, path.join(__dirname, '../../../txt/dog1lasttext.txt'))
+    data.then(res1=>res.end(`<img style="width: 100%" src=${res1} alt=""></img>`))
+    res.writeHead(200, {
+        "content-type": "text/html"
+    })
+    
 })
 
 server.listen(8000, '127.0.0.1', ()=>{
