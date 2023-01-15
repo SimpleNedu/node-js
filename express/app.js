@@ -1,60 +1,28 @@
-const fs = require("fs")
-const path = require('path')
+// 1) IMPORTS
 const express = require('express');
+const morgan = require('morgan')
 const app = express();
+const userRouter = require('./routes/user')
+const tourRouter = require('./routes/tour')
 
+// 2) MIDDLEWARES
 app.use(express.json());
+app.use(morgan('dev'))
+app.use((req, res, next) =>{
+    console.log('my middleware bitch')
+    next()
+})
+app.use(express.static(`${__dirname}/public`))
 
-
-const tours = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../txt/tours_simple.json'), 'utf-8')
-)
-
-app.get('/api/v1/tours', (req, res)=>{
-   res.status(200).json({
-    status: 'success',
-    result: tours.length,
-    data: {
-        tours
-    }
-   })
+app.use((req, res, next) =>{
+    req.time = new Date().toDateString()
+    next()
 })
 
-app.get('/api/v1/tours/:id', (req, res)=>{
-    res.status(200).json({
-        status: "success",
-        data: tours[req.params.id]
-    
-    })
-})
 
-app.post('/api/v1/tours', (req, res)=>{
-    const id = tours[tours.length - 1].id + 1;
 
-    tours.push({
-        ...req.body,
-        id: id
-    })
+// mounting the router for different use cases
+app.use('/api/v1/tours', tourRouter)
+app.use('/api/v1/users', userRouter)
 
-    
-    fs.writeFile(path.join(__dirname, '../txt/tours_simple.json'), JSON.stringify(tours), (err)=>{
-        // if (err){
-        //     res.status(404).json({
-        //         "status": "fail",
-        //         "data": "an error occurred"
-        //     })
-        // }
-        res.status(201).json({
-            "status": "success",
-            "data": {
-                tours: tours[tours.length - 1]
-            }
-        })
-    })
-    
-})
-
-const port = 3000
-app.listen(port, ()=>{
-    console.log('listening...')
-})
+module.exports = app
