@@ -5,4 +5,7 @@ const data = async() =>{
 data()
 .then(res=>res.json())
 .then(res=>console.log(res.data))
+.catch(err=>{
+    console.log(err)
+})
 console.log('wetin dey sup')

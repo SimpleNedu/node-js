@@ -1,12 +1,11 @@
 const fs= require('fs')
-const path = require('path')
+const path = require("path")
 
 const tours = JSON.parse(
     fs.readFileSync(path.join(__dirname, '../../txt/tours_simple.json'), 'utf-8')
 )
 
 exports.getAllTours =  (req, res)=>{
-    console.log(req.method)
     res.status(200).json({
         status: 'success',
         result: tours.length,
@@ -16,7 +15,7 @@ exports.getAllTours =  (req, res)=>{
     })
  }
 
- exports.validateId = (req, res, next, value) =>{
+ exports.validateId = (req, res, next, value) => {
 
     if (value > tours.length) {
         return res.status(404).json({
@@ -108,3 +107,4 @@ exports.deleteTour = (req,res)=>{
         "data": null
     })
 }
+
