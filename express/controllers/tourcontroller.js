@@ -1,110 +1,115 @@
 const fs= require('fs')
 const path = require("path")
+const Tour = require('../model/tourModel') 
 
-const tours = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../../txt/tours_simple.json'), 'utf-8')
-)
-
-exports.getAllTours =  (req, res)=>{
-    res.status(200).json({
-        status: 'success',
-        result: tours.length,
-        data: {
-            tours
-        }
-    })
- }
-
- exports.validateId = (req, res, next, value) => {
-
-    if (value > tours.length) {
-        return res.status(404).json({
-           "status": "sucess",
-            "data": "invalid id for tour"
-        })
-    }
-    next()
- }
-
- exports.validatePostData = (req, res, next)=>{
-    if (!req.body.name || !req.body.price) {
-        return res.status(404).json({
-            "status": "fail",
-            "data": "bad request"
-        })
-    }
-    next()
-}
-
- exports.getTour = (req, res)=>{
-    
-    res.status(200).json({
-        "status": "success",
-        "date": req.time,
-        "data": tours[req.params.id]
-    
-    })
-}
-
-exports.createTour = (req, res)=>{
-    const id = tours[tours.length - 1].id + 1;
-
-    tours.push({
-        ...req.body,
-        id: id
-    })
-    
-    fs.writeFile(path.join(__dirname, '../../txt/tours_simple.json'), JSON.stringify(tours), (err)=>{
-        if (err){
-            return res.status(404).json({
-                "status": "fail",
-                "data": "an error occurred"
-            })
-        }
+// for creating a new tour in the server
+exports.createTour = async(req, res)=>{
+    try {
+        // can be done thios way but we prefer to use async await and an easier way kwa
+    // const newTour = new Tour({...req.body})
+    // newTour.save()
+    // .then(doc=>console.log(doc))
+    // .catch(err=>console.log(err))
+    // return res.status(200).json({
+    //     "status": "success"
+    // })
+        const newTour = await Tour.create(req.body)
+        
         res.status(201).json({
             "status": "success",
             "data": {
-                tours: tours[tours.length - 1]
+                "tours": req.body
             }
         })
-    })
-    
+    } catch (error) {
+        res.status(400).json({
+            "status": "fail", 
+            // note in a real appplication you must handle your errors well, but for now go by the below
+            "message": "Invalid data sent"
+        })
+    }
 }
 
-exports.updateTour = (req,res)=>{
-    const id = Number(req.params.id)
-    const tour = tours.find(el=>el.id === id)
-    
-    const tours2 = tours.map(data => {
-        if (id === data.id) {
-            return {...req.body, id: id};
-        }
-        return data
-    })
-    fs.writeFile(path.join(__dirname, '../../txt/tours_simple.json'), JSON.stringify(tours2), err=>{
-        if (err) {
-            return res.status(404).json({
+// for getting all our tours in the server
+exports.getAllTours =  async(req, res)=>{
+    try {
+        const tours = await Tour.find()
+
+        if (!tours.length) {
+            return res.status(400).json({
                 "status": "fail",
-                "data": "an error occurred"
+                "message": 'there are no tours yet'
             })
         }
         res.status(200).json({
-            "status": "success",
-            "data": {
-                tours: tours2
+            status: 'success',
+            data: {
+                tours
             }
         })
-    })
+    } catch (error) {
+        res.status(400).json({
+            "status": "fail",
+            "message": 'request unsuccessful'
+        })
+    }
+    
+ }
 
+ exports.getTour = async(req, res)=>{
+    try {
+    // this first method is kinda manual, we use mongoDb built in mode of searching by id
+        // const tour = await Tour.find({"_id": req.params.id})
+        const tour = await Tour.findById(req.params.id)
+
+        res.status(200).json({
+            "status": "success",
+            "data": tour
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            "status": "fail",
+            "message": "getting tour failed, try again later"
+        })
+    }
 }
 
-exports.deleteTour = (req,res)=>{
-    const id = Number(req.params.id)
-    const tour = tours.find(el=>el.id === id)
-   
-    res.status(204).json({
-        "status": "success",
-        "data": null
-    })
+
+exports.updateTour = async(req,res)=>{
+    try {
+        // if you still want to use the data fro the await below, you can cache it in a const?
+        await Tour.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        })
+
+        res.status(200).json({
+            status: "success",
+            data: {"update": req.body}
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: "fail",
+            message: error
+        })
+    }
+}
+
+exports.deleteTour = async(req,res)=>{
+    try {
+        // if you still want to use the data fro the await below, you can cache it in a const?
+        await Tour.findByIdAndDelete(req.params.id)
+
+        res.status(204).json({
+            status: "success",
+            data: "delete actio successful"
+        })
+    } catch (error) {
+        res.status(500).jsn({
+            status: "fail",
+            message: "delete action failed"
+        })
+    }
 }
 

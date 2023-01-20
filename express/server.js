@@ -1,4 +1,4 @@
-const mongoose = require('mongoose') //first of all import the mongoose  
+const mongoose = require('mongoose') //first of all import the mongoose 
 const dotenv = require('dotenv')
 dotenv.config({path: './config.env'})
 
@@ -15,25 +15,6 @@ mongoose.connect(DB, {
     // activities that will require to be done in the mongoose should go here
     console.log('DP up and running..')
 }).catch(err=>console.log(err))
-
-//create 
-const tourSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'a tour must have a name'],
-        unique: true
-    },
-    rating: {
-        type: Number,
-        default: 4.5
-    },
-    price: {
-        type: Number,
-        required: [true, "a tour must have a price"]
-    }
-}) 
-
-const tour = mongoose.model("tour", tourSchema)
 
 const port = process.env.PORT || 3000
 app.listen(port, ()=>{
