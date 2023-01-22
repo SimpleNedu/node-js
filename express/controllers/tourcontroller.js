@@ -25,7 +25,7 @@ exports.createTour = async(req, res)=>{
         res.status(400).json({
             "status": "fail", 
             // note in a real appplication you must handle your errors well, but for now go by the below
-            "message": "Invalid data sent"
+            "message": error
         })
     }
 }
@@ -33,14 +33,50 @@ exports.createTour = async(req, res)=>{
 // for getting all our tours in the server
 exports.getAllTours =  async(req, res)=>{
     try {
-        const tours = await Tour.find()
+        // BUILD QUERY
+        // 1) FILTERING
+        const queryObj = {...req.query};
+        const exclude = ['sort', 'limit', 'fields', 'page']
+        exclude.forEach(el=> delete queryObj[el])
 
-        if (!tours.length) {
-            return res.status(400).json({
-                "status": "fail",
-                "message": 'there are no tours yet'
-            })
+        // 2) ADVANCED FILTERING
+        let queryStr = JSON.stringify(queryObj)
+        queryStr = JSON.parse(queryStr.replace(/\b(lte|lt|gte|gt)\b/g, match=>`$${match}`))
+
+        // this receives the value of the fuiltered object and .find()method always return a query
+        let query = Tour.find(queryStr)
+
+        // 3)SORTING
+        if (req.query.sort){
+            const sortBy = req.query.sort.split(',').join(' ')
+            query = query.sort(sortBy)
+        } else{
+            query = query.sort('-createdAt')
         }
+
+        // 4) limiting number of fields
+        if (req.query.fields){
+            const fields = req.query.fields.split(',').join(' ')
+            console.log(fields)
+            query = query.select(fields)
+        } else{
+            query = query.select('-__v')
+        }
+
+        // PAGINATION
+        const limit = req.query.limit
+        const page = req.query.page
+        const skip = (page-1)* limit
+
+        query = query.skip(skip).limit(limit)
+        if (req.query.page){
+            const data = await Tour.countDocuments()
+            if (skip >= data) throw Error('page does not exist')
+        }
+
+        // EXECUTE QUERY
+        const tours = await query;
+
         res.status(200).json({
             status: 'success',
             data: {
@@ -50,7 +86,7 @@ exports.getAllTours =  async(req, res)=>{
     } catch (error) {
         res.status(400).json({
             "status": "fail",
-            "message": 'request unsuccessful'
+            "message": error
         })
     }
     
@@ -111,5 +147,15 @@ exports.deleteTour = async(req,res)=>{
             message: "delete action failed"
         })
     }
+}
+
+////////////////////////////////////////
+// always remember that once a filter and sort has been arranged with an initial function its easier to aplly those filytering with the help of middlewares than querying with a different fnction
+exports.getBestTour = async(req, res, next) =>{
+    req.query.limit = 5;
+    req.query.sort = '-ratingsAverage,price'
+    req.query.fields = 'name,price,ratingsAverage,destination,duration'
+
+    next()
 }
 
